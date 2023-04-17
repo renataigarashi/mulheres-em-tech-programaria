@@ -1,0 +1,24 @@
+{
+  "name": "mulheres-em-tech-programaria",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "module": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/renataigarashi/mulheres-em-tech-programaria.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/renataigarashi/mulheres-em-tech-programaria/issues"
+  },
+  "homepage": "https://github.com/renataigarashi/mulheres-em-tech-programaria#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
