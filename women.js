@@ -1,11 +1,15 @@
 import express from 'express'
 import { dbConnection } from './db.js'
 import Woman from './womanModel.js'
-
+import cors from 'cors'
 
 dbConnection() // call function to connect database
 const router = express.Router()
 const app = express()
+
+app.use(express.json())
+app.use(cors())
+
 const port = 3333
 
 
@@ -73,7 +77,6 @@ const deleteWoman = async (request, response) => {
   }
 
 
-app.use(express.json())
 
 app.use(router.get('/women', showWomen))
 app.use(router.post('/addWoman', addWoman))
