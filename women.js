@@ -1,84 +1,77 @@
 import express from 'express'
-import { v4 as uuidv4 } from 'uuid'
+import { dbConnection } from './db.js'
+import Woman from './womanModel.js'
 
+
+dbConnection() // call function to connect database
 const router = express.Router()
-
 const app = express()
 const port = 3333
 
-const listWomen = [
-{
-    id: '1',
-    name: "Iana Chan ",
-    image: "https://bit.ly/3JCXBqP",
-    minibio: "CEO & Programaria Founder"
-}, 
-{
-  id: '2',
-  name: "Nina da Hora",
-  image: "https://bit.ly/3FKpFaz",
-  minibio: "HAcker antirracista"
-}, 
-{
-  id: '3',
-  name: "Teste",
-  image: "https://bit.ly/3FKpFaz",
-  minibio: "HAcker"
-}, 
-]
 
-const showWomen = (request, response) => {
-  response.json(listWomen)
+const showWomen = async (request, response) => {
+  try {
+    const listWomenFromDatabase = await Woman.find()
+
+    response.json(listWomenFromDatabase)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-const addWoman = (request, response) => {
-  const newWoman = {
-    id: uuidv4(),
+const addWoman = async (request, response) => {
+  const newWoman = new Woman({
     name: request.body.name,
     image: request.body.image,
+    quotation: request.body.quotation,
     minibio: request.body.minibio
-  }
-  listWomen.push(newWoman)
+  })
 
-  response.json(listWomen)
+  try {
+    const createdWoman = await newWoman.save()
+    response.status(201).json(createdWoman)
+  } catch (error) {
+    console.log('ERRO', error)
+  }
 }
 
-const updateWoman = (request, response) => {
-  const searchWoman = (woman) => {
-    if (woman.id === request.params.id) {
-      return woman
+const updateWoman = async (request, response) => {
+  try {
+    const findedWoman = await Woman.findById(request.params.id)
+
+    if (request.body.name) {
+      findedWoman.name = request.body.name
+    }
+  
+    if (request.body.image) {
+      findedWoman.image = request.body.image
+    }
+
+    if (request.body.quotation) {
+      findedWoman.quotation = request.body.quotation
+    }
+  
+    if (request.body.minibio) {
+      findedWoman.minibio = request.body.minibio
+    }
+    const updatedWomanInDatabase = await findedWoman.save()
+    response.json(updatedWomanInDatabase)
+
+  } catch (error) {
+    response.json({ errorMessage: error})
+    console.log('ERRO: ', error)
+  }
+}
+
+const deleteWoman = async (request, response) => {
+    try {
+      await Woman.findByIdAndDelete(request.params.id) 
+      response.json({ message: 'Women sucessfully deleted!'})
+    } catch (error) {
+      console.log('ERRO: ', error)
     }
   }
 
-  const womanFinded = listWomen.find(searchWoman)
-
-  if (request.body.name) {
-    womanFinded.name = request.body.name
-  }
-
-  if (request.body.image) {
-    womanFinded.image = request.body.image
-  }
-
-  if (request.body.minibio) {
-    womanFinded.minibio = request.body.minibio
-  }
-
-  response.json(listWomen)
-
-}
-
-const deleteWoman = (request, response) => {
-  const allWomanLessFromSearch = (woman) => {
-    if (woman.id !== request.params.id) {
-      console.log('WOMAN', woman)
-      return woman
-    }
-  }
-
-    const womenNotDeleted = listWomen.filter(allWomanLessFromSearch)
-    response.json(womenNotDeleted)
-  }
 
 app.use(express.json())
 
